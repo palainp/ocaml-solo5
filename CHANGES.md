@@ -1,4 +1,4 @@
-## XXX
+## X
 
 * Support for Ocaml 5.3.0 (@shym #148)
 * Update the FreeBSD version for CI (@shym #149)
