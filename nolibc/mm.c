@@ -612,6 +612,7 @@ int munmap(void *addr, size_t length)
 int posix_memalign(void **memptr, size_t alignment, size_t size)
 {
     DPRINTF("request aligned size %lu (alignement constraint == %lu).\n", size, alignment);
+    printf("request aligned size %lu (alignement constraint == %lu) by %p.\n", size, alignment, __builtin_return_address (0));
     /* Although we can probably serve alignement greater than OCAML_SOLO5_PAGESIZE
      * it will raise complexity of the algorithm. So far Ocaml only uses 4096.
      */
@@ -639,6 +640,7 @@ int posix_memalign(void **memptr, size_t alignment, size_t size)
 void *malloc(size_t size)
 {
     DPRINTF("request allocation for %lu.\n", size);
+    printf("request allocation for %lu by %p.\n", size, __builtin_return_address (0));
 
     if (size == 0)
     {
@@ -682,7 +684,7 @@ void *malloc(size_t size)
             DPRINTF("init a buddy system for #%lu.\n", count);
 
             void *ptr = buddy_alloc(&(bu_alloc[count]), n_blk);
-            DPRINT_CALLER("%lu Bytes @%p requested by ", size, ptr);
+            DPRINT_CALLER("%lu _Bytes @%p requested by ", size, ptr);
             // we are sure to have memory with that new page
             return ptr;
         }
@@ -699,6 +701,7 @@ void free(void *ptr)
 {
     DPRINT_CALLER("addr:%p ", ptr);
     DPRINTF("request free for %p.\n", ptr);
+    printf("request free for %p.\n", ptr);
     if (ptr == NULL) return;
 
     size_t count = 0;
@@ -725,6 +728,7 @@ void free(void *ptr)
 void *calloc(size_t nmemb, size_t size)
 {
     DPRINTF("request allocation for %lu*%lu.\n", nmemb, size);
+    printf("request allocation for %lu*%lu.\n", nmemb, size);
     size_t total;
     if (__builtin_mul_overflow(nmemb, size, &total))
     {
@@ -744,6 +748,7 @@ void *calloc(size_t nmemb, size_t size)
 void *realloc(void *addr, size_t size)
 {
     DPRINTF("request reallocation for %p %lu.\n", addr, size);
+    printf("request reallocation for %p %lu.\n", addr, size);
 // naive implementation, we should find a way to avoid some copies
     void * ptr = malloc(size);
     if (ptr == NULL)
